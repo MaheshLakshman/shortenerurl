@@ -138,7 +138,15 @@
                     "data": "short_url"
                 },
                 {
-                    "data": "created_at"
+                    "data": "created_at",
+                    render: function(data) {
+                        var dat = new Date(data);
+                        var month = dat.getMonth();
+                        var day = dat.getDate();
+                        var year = dat.getFullYear();
+                        var hour = dat.getHours();
+                        return day + "-" + month + "-" + year+" "+hour+":"+dat.getMinutes();
+                    }
                 },
                 {
                     "data": ""
