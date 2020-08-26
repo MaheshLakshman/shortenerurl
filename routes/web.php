@@ -27,5 +27,5 @@ Route::middleware('auth')->group(function () {
     Route::get("shorturl/all", "ShortUrlController@get")->name('urls');
 });
 
+Route::get("shrturl/{code}", "ShortUrlController@getLongUrl");
 
-Route::view('test', 'adminlte.shorturl');

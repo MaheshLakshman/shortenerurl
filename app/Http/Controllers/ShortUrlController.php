@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\ShortUrl;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Responses\SuccessResponse;
 use App\Http\Requests\AddShortUrlRequest;
+use App\Http\Responses\ErrorResponse;
 
 class ShortUrlController extends Controller
 {
@@ -20,9 +22,10 @@ class ShortUrlController extends Controller
     public function store(AddShortUrlRequest $request)
     {
         $data = $request->validated();
-        $data['user_id'] = Auth::user()->id;
-        $data['short_url'] = Str::random(8);
-        $this->addShortUrl->create($data);
+        $data['user_id'] = $id = Auth::user()->id;
+        $save = $this->addShortUrl->create($data);
+        $short_url = URL::to("/") . '/shrturl/' . base_convert($save->id, 10, 36);
+        $save->update(["short_url" => $short_url]);
         return new SuccessResponse("Saved successfully..!");
     }
 
@@ -38,5 +41,13 @@ class ShortUrlController extends Controller
             'data' => $urls
         );
         return $json_data;
+    }
+
+    public function getLongUrl($code)
+    {
+        $id = base_convert($code, 36, 10);
+        $redirect = $this->addShortUrl->where('id', $id)
+            ->first('url');
+        return $redirect ? redirect($redirect->url) : new ErrorResponse("Invalid Url");
     }
 }

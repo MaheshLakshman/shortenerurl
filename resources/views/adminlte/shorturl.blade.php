@@ -79,6 +79,7 @@
                                         <th>URL</th>
                                         <th>Short URL</th>
                                         <th>Created Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -87,6 +88,7 @@
                                         <th>URL</th>
                                         <th>Short URL</th>
                                         <th>Created Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -117,27 +119,47 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        var colum = '<button class="btn btn-success" id="copyurl">copy</button>';
         var table = $("#example1").DataTable({
             "responsive": true,
             "autoWidth": false,
             'autoWidth': false,
-      "ajax": {
-        "url": "{{ route('urls') }}",
-        "type": "GET"
-      },
-      "columns": [{
-          "data": "title"
-          },
-          {
-          "data": "url"
-          },
-          {
-          "data": "short_url"
-          },
-          {
-          "data": "created_at"
-          }
-      ]
+            "ajax": {
+                "url": "{{ route('urls') }}",
+                "type": "GET"
+            },
+            "columns": [{
+                    "data": "title"
+                },
+                {
+                    "data": "url"
+                },
+                {
+                    "data": "short_url"
+                },
+                {
+                    "data": "created_at"
+                },
+                {
+                    "data": ""
+                }
+            ],
+            "columnDefs": [{
+                "targets": -1,
+                "data": null,
+                "defaultContent": colum
+            }]
+        });
+
+        $('#example1 tbody').on('click', '#copyurl', function() {
+            var data = table.row($(this).parents('tr')).data();
+            var shortUrl = document.createElement("input");
+            shortUrl.setAttribute("value", data['short_url']);
+            document.body.appendChild(shortUrl);
+            shortUrl.select();
+            shortUrl.setSelectionRange(0, 99999)
+            document.execCommand("copy");
+            document.body.removeChild(shortUrl);
         });
 
         $("#addShortUrl").click(function(e) {
@@ -160,19 +182,18 @@
                     successHtml += data.msg;
                     $('#successInsert').html(successHtml);
                     table.ajax.reload();
-                    console.log(data);
                 },
                 error: function(data) {
                     $("#addShortUrl").prop("disabled", false);
                     var errors = data.responseJSON;
                     errorsHtml = '<div class="alert alert-danger alert-dismissible">';
-                    errorsHtml += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><h4><i class="icon fa fa-ban"></i> Alert!</h4>';
+                    errorsHtml += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><h4><i class="icon fa fa-ban"></i> Alert!</h4><ul>';
                     $.each(errors.msg, function(key, value) {
-                        errorsHtml += value + ' ';
+                        errorsHtml += '<li>' + value + '</li>';
                     });
-                    errorsHtml += '</div>';
+                    errorsHtml += '</ul></div>';
                     $('#successInsert').html(errorsHtml);
-                    console.log(errors.msg);
+                    //console.log(errors.msg);
                 }
             });
         });

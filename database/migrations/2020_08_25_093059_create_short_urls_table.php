@@ -18,7 +18,7 @@ class CreateShortUrlsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->mediumText('url');
-            $table->string('short_url');
+            $table->string('short_url')->default('null');
             $table->timestamps();
         });
     }
