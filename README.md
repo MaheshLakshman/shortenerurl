@@ -17,6 +17,6 @@
 
 4. Run Database migration for creating tables in your database, "php artisan migrate".
 
-#### (Not yet completed ..Few things are missing anyway pls check.)
+
 
 
